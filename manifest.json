@@ -2,6 +2,7 @@
   "name": "Fut Stats Ultimate",
   "short_name": "Fut Stats",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#06070a",
