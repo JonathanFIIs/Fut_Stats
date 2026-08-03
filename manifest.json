@@ -3,6 +3,7 @@
   "short_name": "Fut Stats",
   "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#06070a",
   "theme_color": "#f3ce56",
   "icons": [
