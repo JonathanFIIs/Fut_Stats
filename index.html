@@ -512,6 +512,7 @@
             line-height: 1;
         }
 
+        /* --- BOTÕES PRINCIPAIS DOURADOS --- */
         .btn-primary {
             width: 100%;
             background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold-dark) 100%);
@@ -560,6 +561,7 @@
             color: var(--accent-gold-bright);
         }
 
+        /* --- DASHBOARD ESTATÍSTICAS --- */
         .panel {
             width: 100%;
             background: var(--panel-bg);
@@ -982,10 +984,13 @@
             </div>
         </div>
 
-        <!-- AREA DE EXPORTAÇÃO (FORA DA TELA) SÓ USADA AO COMPARTILHAR -->
+        <!-- AREA DE EXPORTAÇÃO QUE FICA FORA DA TELA E SÓ É USADA AO GERAR A IMAGEM -->
         <div id="export-card-area-wrapper">
             <div id="export-card-area" class="export-container-box">
+                <!-- Copia dinamicamente o card no momento da captura -->
                 <div id="export-card-clone-container"></div>
+
+                <!-- BANNER DE ESTATÍSTICAS ANEXADO NA IMAGEM DE COMPARTILHAMENTO -->
                 <div class="export-stats-banner">
                     <div class="export-stats-header">
                         <span class="export-stats-title">Estatísticas</span>
@@ -1032,7 +1037,8 @@
 
             <div class="form-group">
                 <label>Foto do Jogador (Apenas PNG)</label>
-                <input type="file" id="input-photo" class="form-control" accept="image/png" onchange="handlePhotoUpload(this)">
+                <!-- accept libera Galeria e Câmera no celular -->
+                <input type="file" id="input-photo" class="form-control" accept="image/*" onchange="handlePhotoUpload(this)">
                 <small style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">
                     Recomendação: Use uma foto PNG com fundo transparente. Proporção ideal: 3:4 (ex: 600x800px).
                 </small>
@@ -1187,7 +1193,7 @@
             matchRecords: []
         };
 
-        const STORAGE_KEY = 'pelada_stats_ultimate_v13';
+        const STORAGE_KEY = 'pelada_stats_ultimate_v14';
 
         window.openModal = function(id) {
             if (id === 'modal-config') {
@@ -1426,9 +1432,9 @@
                 cardEl.classList.add('bronze');
             } else if (state.over < 85) {
                 cardEl.classList.add('silver');
-            } else if (state.over < 99) { // GOLD ATÉ 98
+            } else if (state.over < 99) {
                 cardEl.classList.add('gold');
-            } else { // REGRA SOLICITADA: BLACK SOMENTE NO OVER 99+
+            } else {
                 cardEl.classList.add('black');
             }
 
@@ -1643,7 +1649,7 @@
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 
-                if (file.type !== 'image/png') {
+                if (!file.type.includes('png') && !file.name.toLowerCase().endsWith('.png')) {
                     alert('Por favor, selecione um arquivo no formato PNG (de preferência com fundo transparente).');
                     input.value = '';
                     return;
