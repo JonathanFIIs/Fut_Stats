@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fut Stats Ultimate</title>
+    <!-- Favicon e PWA Manifest -->
+    <link rel="icon" type="image/svg+xml" href="./icon.svg">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#f3ce56">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- html2canvas for card export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #06070a;
+            --panel-bg: #0f121a;
+            --panel-border: rgba(243, 206, 86, 0.35);
+            --accent-gold: #f3ce56;
+            --accent-gold-bright: #ffe885;
+            --accent-gold-dark: #b88d22;
+            --accent-silver: #e2e8f0;
+            --accent-neon-purple: #a855f7;
+            --accent-neon-light-purple: #d8b4fe;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 12px 60px 12px;
+            background-image: radial-gradient(circle at 50% 0%, #1a1708 0%, #06070a 85%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 480px;
+            padding: 10px 10px 15px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            color: var(--accent-gold);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.08);
+            background: #1a170a;
+            border-color: var(--accent-gold-bright);
+            color: #ffffff;
+        }
+
+        .svg-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 520px;
+            }
+        }
+
+        #export-card-area-wrapper {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1000;
+        }
+
+        .export-container-box {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 330px;
+            background: #06070a;
+            padding: 12px;
+            border-radius: 24px;
+        }
+
+        .fut-card {
+            width: 310px;
+            height: 470px;
+            position: relative;
+            border-radius: 22px;
+            background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold-dark) 50%, var(--accent-gold) 100%);
+            padding: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9);
+            transition: all 0.4s ease;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .fut-card-inner-border {
+            width: 100%;
+            height: 100%;
+            border-radius: 19px;
+            background: #080a0e;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .fut-card-content {
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            position: relative;
+            border: 1px solid rgba(243, 206, 86, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 14px 20px 14px;
+            overflow: hidden;
+        }
+
+        .card-bg-pattern {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: 
+                radial-gradient(circle at 50% 20%, rgba(243, 206, 86, 0.15) 0%, transparent 65%),
+                linear-gradient(135deg, #141108 0%, #06070a 50%, #1a160a 100%);
+        }
+
+        .card-bg-pattern::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -30px;
+            width: 220px;
+            height: 220px;
+            border: 1.5px solid rgba(243, 206, 86, 0.2);
+            transform: rotate(35deg) skewX(15deg);
+            background: linear-gradient(135deg, rgba(243, 206, 86, 0.08), transparent);
+            pointer-events: none;
+        }
+
+        .card-bg-pattern::after {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            right: -40px;
+            width: 250px;
+            height: 250px;
+            border: 1.5px solid rgba(243, 206, 86, 0.15);
+            transform: rotate(-25deg) skewY(-10deg);
+            background: linear-gradient(45deg, rgba(243, 206, 86, 0.05), transparent);
+            pointer-events: none;
+        }
+
+        .fut-card.bronze {
+            background: linear-gradient(135deg, #a87343 0%, #422818 50%, #a87343 100%);
+        }
+        .fut-card.bronze .card-bg-pattern {
+            background: radial-gradient(circle at 50% 20%, rgba(168, 115, 67, 0.2) 0%, transparent 60%),
+                        linear-gradient(135deg, #2b180d 0%, #120904 70%);
+        }
+        .fut-card.bronze .rating, .fut-card.bronze .position, .fut-card.bronze .player-name, .fut-card.bronze .attr-value, .fut-card.bronze .attr-label {
+            color: #f7e8dc;
+        }
+        .fut-card.bronze .card-line { background: rgba(247, 232, 220, 0.2); }
+
+        .fut-card.silver {
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #cbd5e1 100%);
+            box-shadow: 0 0 25px rgba(226, 232, 240, 0.3), 0 20px 45px rgba(0,0,0,0.9);
+        }
+        .fut-card.silver .fut-card-content { border-color: rgba(226, 232, 240, 0.8); }
+        .fut-card.silver .card-bg-pattern {
+            background: radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.35) 0%, transparent 70%),
+                        linear-gradient(135deg, #2a3447 0%, #0d121d 60%, #1e293b 100%);
+        }
+        .fut-card.silver .rating, .fut-card.silver .position, .fut-card.silver .player-name, .fut-card.silver .attr-value {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+        .fut-card.silver .attr-label { color: #cbd5e1; }
+        .fut-card.silver .card-line { background: linear-gradient(90deg, transparent, #ffffff, transparent); }
+
+        .fut-card.gold {
+            background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold-dark) 50%, var(--accent-gold-bright) 100%);
+            box-shadow: 0 0 30px rgba(243, 206, 86, 0.3), 0 20px 45px rgba(0,0,0,0.9);
+        }
+        .fut-card.gold .card-bg-pattern {
+            background: radial-gradient(circle at 50% 20%, rgba(243, 206, 86, 0.25) 0%, transparent 65%),
+                        linear-gradient(135deg, #1f1a08 0%, #050608 80%);
+        }
+        .fut-card.gold .rating, .fut-card.gold .position, .fut-card.gold .player-name, .fut-card.gold .attr-value {
+            color: var(--accent-gold-bright);
+            text-shadow: 0 0 10px rgba(243, 206, 86, 0.5);
+        }
+        .fut-card.gold .attr-label { color: var(--accent-gold); }
+        .fut-card.gold .card-line { background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); }
+
+        /* BLACK ULTRA MEGA POWER (APENAS OVER 99+) */
+        .fut-card.black {
+            background: linear-gradient(135deg, var(--accent-neon-purple) 0%, #150228 50%, var(--accent-neon-light-purple) 100%);
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.65), 0 0 15px rgba(216, 180, 254, 0.4), 0 25px 50px rgba(0,0,0,0.95);
+            animation: pulseGlow 2.5s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 25px rgba(168, 85, 247, 0.5), 0 0 10px rgba(216, 180, 254, 0.3); }
+            100% { box-shadow: 0 0 45px rgba(168, 85, 247, 0.85), 0 0 20px rgba(216, 180, 254, 0.6); }
+        }
+        .fut-card.black .fut-card-content { border-color: rgba(216, 180, 254, 0.7); }
+        .fut-card.black .card-bg-pattern {
+            background: radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.35) 0%, transparent 70%),
+                        linear-gradient(135deg, #10061d 0%, #030208 60%, #1a082e 100%);
+        }
+        .fut-card.black .rating, .fut-card.black .position, .fut-card.black .player-name, .fut-card.black .attr-value {
+            color: var(--accent-neon-light-purple);
+            text-shadow: 0 0 12px rgba(168, 85, 247, 0.9), 0 0 20px rgba(216, 180, 254, 0.6);
+        }
+        .fut-card.black .attr-label { color: #d8b4fe; }
+        .fut-card.black .card-line { background: linear-gradient(90deg, transparent, var(--accent-neon-light-purple), transparent); }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 3;
+            margin-top: 4px;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 0.9;
+        }
+
+        .rating {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+        }
+
+        .position {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .nation-flag {
+            width: 26px;
+            height: 18px;
+            border-radius: 2px;
+            object-fit: cover;
+            margin-top: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+        }
+
+        .photo-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            bottom: 115px;
+            z-index: 2;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.85));
+        }
+
+        .card-bottom {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: auto;
+            padding-bottom: 4px;
+            background: linear-gradient(to top, rgba(8, 10, 14, 0.98) 82%, rgba(8, 10, 14, 0.7) 95%, transparent 100%);
+            border-radius: 0 0 16px 16px;
+            padding-top: 14px;
+        }
+
+        .player-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            text-align: center;
+            margin-bottom: 6px;
+            width: 95%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-line {
+            width: 88%;
+            height: 1.5px;
+            margin-bottom: 8px;
+            border-radius: 1px;
+        }
+
+        .fut-attributes-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 16px;
+            row-gap: 4px;
+            width: 82%;
+            margin: 0 auto;
+        }
+
+        .attr-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .attr-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .attr-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-watermark-footer {
+            margin-top: 8px;
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            opacity: 0.4;
+            text-transform: uppercase;
+        }
+
+        .export-stats-banner {
+            width: 310px;
+            background: #0b0e14;
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            margin-top: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+
+        .export-stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .export-stats-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        .export-stats-year {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+        }
+
+        .export-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            width: 100%;
+        }
+
+        .export-stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .export-stat-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(243, 206, 86, 0.08);
+            border: 1px solid rgba(243, 206, 86, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            flex-shrink: 0;
+        }
+
+        .export-stat-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1px;
+        }
+
+        .export-stat-lbl {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .export-stat-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold-dark) 100%);
+            color: #1a1200;
+            border: none;
+            padding: 15px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(243, 206, 86, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(243, 206, 86, 0.45);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            color: var(--text-primary);
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #1a160a;
+            border-color: var(--accent-gold);
+            color: var(--accent-gold-bright);
+        }
+
+        .panel {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .year-tag {
+            font-family: 'Rajdhani', sans-serif;
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .stats-appito-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 14px;
+            width: 100%;
+            justify-items: center;
+        }
+
+        .appito-stat-unit {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 14px;
+        }
+
+        .appito-icon-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(243, 206, 86, 0.1);
+            border: 1px solid rgba(243, 206, 86, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            flex-shrink: 0;
+        }
+
+        .appito-stat-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .appito-stat-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .appito-stat-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text-primary);
+        }
+
+        .match-record-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .match-record-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .match-record-date {
+            font-weight: 800;
+            color: var(--accent-gold);
+            font-size: 0.9rem;
+        }
+
+        .match-record-stats {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .season-history-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .season-history-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .season-history-year {
+            font-weight: 800;
+            color: var(--accent-gold);
+            font-size: 1rem;
+        }
+
+        .season-history-over {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .season-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 460px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.95);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 14px;
+        }
+
+        .modal-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-gold);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .stat-config-row {
+            display: grid;
+            grid-template-columns: 28px 1fr 80px 38px;
+            gap: 8px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .checkbox-custom {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-gold);
+            cursor: pointer;
+        }
+
+        .btn-delete-stat {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete-stat:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ffffff;
+        }
+
+        .quick-add-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .quick-add-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-md);
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-add-card label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .quick-add-counter {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .btn-counter {
+            background: #1a160a;
+            border: 1px solid var(--panel-border);
+            color: var(--accent-gold);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-counter:hover {
+            border-color: var(--accent-gold);
+            background: #2b220d;
+            color: #ffffff;
+        }
+
+        .share-img-preview {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--panel-border);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-gold);
+            color: #1a1200;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 30px rgba(243, 206, 86, 0.35);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 13v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            FUT STATS
+        </div>
+        <div class="header-actions">
+            <!-- BOTÃO CONSULTAR REGISTROS DE JOGOS -->
+            <button class="btn-icon" type="button" onclick="openModal('modal-matches-history')" title="Consultar Registros de Jogos">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            </button>
+            <!-- BOTÃO GESTÃO DE TEMPORADAS -->
+            <button class="btn-icon" type="button" onclick="openModal('modal-seasons')" title="Histórico de Temporadas">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            </button>
+            <!-- BOTÃO CONFIGURAÇÕES -->
+            <button class="btn-icon" type="button" onclick="openModal('modal-config')" title="Configurações">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- CARD PRINCIPAL EXIBIDO NA TELA PRINCIPAL -->
+        <div id="fut-card" class="fut-card bronze">
+            <div class="fut-card-inner-border">
+                <div class="fut-card-content">
+                    
+                    <div class="card-bg-pattern"></div>
+                    
+                    <div class="card-top">
+                        <div class="card-info">
+                            <span class="rating" id="card-rating">60</span>
+                            <span class="position" id="card-position">ATA</span>
+                            <img class="nation-flag" id="card-flag" src="https://flagcdn.com/w40/br.png" alt="Bandeira">
+                        </div>
+                    </div>
+
+                    <div class="photo-container">
+                        <img id="card-photo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' opacity='0.5' d='M12 12a5 5 0 1 0-5-5 5.006 5.006 0 0 0 5 5zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Jogador">
+                    </div>
+
+                    <div class="card-bottom">
+                        <div class="player-name" id="card-name">JONATHAN ALMEIDA</div>
+                        <div class="card-line"></div>
+                        <div class="fut-attributes-container" id="card-attributes-grid"></div>
+                        <div class="card-watermark-footer">FUT CARDS</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- AREA DE EXPORTAÇÃO PARA COMPARTILHAR -->
+        <div id="export-card-area-wrapper">
+            <div id="export-card-area" class="export-container-box">
+                <div id="export-card-clone-container"></div>
+                <div class="export-stats-banner">
+                    <div class="export-stats-header">
+                        <span class="export-stats-title">Estatísticas</span>
+                        <span class="export-stats-year" id="export-year-tag">2026</span>
+                    </div>
+                    <div class="export-stats-grid" id="export-banner-stats"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" type="button" onclick="generateCardImage()">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+            Compartilhar Card
+        </button>
+
+        <button class="btn-secondary" type="button" onclick="openModal('modal-add-pelada')">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Adicionar Novo Registro
+        </button>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">Estatísticas Acumuladas</span>
+                <span class="year-tag" id="current-year-tag">2026</span>
+            </div>
+
+            <div class="stats-appito-grid" id="stats-appito-container"></div>
+        </div>
+
+    </div>
+
+    <!-- MODAL CONFIGURAÇÕES -->
+    <div class="modal-overlay" id="modal-config">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Configurações</span>
+                <button class="close-btn" type="button" onclick="closeModal('modal-config')">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Jogador (Apenas PNG)</label>
+                <input type="file" id="input-photo" class="form-control" accept="image/png" onchange="handlePhotoUpload(this)">
+                <small style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">
+                    Recomendação: Use uma foto PNG com fundo transparente. Proporção ideal: 3:4 (ex: 600x800px).
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label>Nome no Card</label>
+                <input type="text" id="input-name" class="form-control" placeholder="Ex: Jonathan Almeida">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                    <label>Ano Atual</label>
+                    <input type="number" id="input-year" class="form-control" placeholder="2026">
+                </div>
+                <div class="form-group">
+                    <label>Posição</label>
+                    <select id="input-position" class="form-control">
+                        <option value="ATA">ATA (Atacante)</option>
+                        <option value="MEI">MEI (Meio-Campo)</option>
+                        <option value="VOL">VOL (Volante)</option>
+                        <option value="DEF">DEF (Defensor)</option>
+                        <option value="LAT">LAT (Lateral)</option>
+                        <option value="GOL">GOL (Goleiro)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nacionalidade</label>
+                <select id="input-flag" class="form-control">
+                    <option value="br">Brasil</option>
+                    <option value="ar">Argentina</option>
+                    <option value="pt">Portugal</option>
+                    <option value="es">Espanha</option>
+                    <option value="fr">França</option>
+                    <option value="de">Alemanha</option>
+                    <option value="it">Itália</option>
+                </select>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--panel-border); margin: 6px 0;">
+
+            <span class="modal-title" style="font-size: 0.85rem; color: var(--text-secondary);">Estatísticas Monitoradas e Metas</span>
+
+            <div id="config-stats-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+            <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <input type="text" id="input-custom-stat-name" class="form-control" placeholder="Nova estatística..." style="flex:1;">
+                <button class="btn-secondary" type="button" onclick="addCustomStat()" style="width: auto; padding: 0 16px;">Criar</button>
+            </div>
+
+            <button class="btn-primary" type="button" onclick="saveSettings()" style="margin-top: 10px;">
+                Salvar Alterações
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTROS DE JOGOS -->
+    <div class="modal-overlay" id="modal-matches-history">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Registros de Jogos</span>
+                <button class="close-btn" type="button" onclick="closeModal('modal-matches-history')">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Histórico de partidas registradas. Você pode excluir um registro caso tenha errado.</p>
+            <div id="matches-history-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL TEMPORADAS -->
+    <div class="modal-overlay" id="modal-seasons">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Gestão de Temporadas</span>
+                <button class="close-btn" type="button" onclick="closeModal('modal-seasons')">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Ao encerrar a temporada, suas estatísticas vão para o histórico e o card volta para o nível inicial (60).</p>
+            <button class="btn-primary" type="button" onclick="finishSeason()">🏆 Encerrar Temporada Atual & Virar o Ano</button>
+            <hr style="border: none; border-top: 1px solid var(--panel-border); margin: 6px 0;">
+            <span class="modal-title" style="font-size: 0.85rem; color: var(--text-secondary);">Histórico de Temporadas Salvas</span>
+            <div id="seasons-history-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL ADICIONAR REGISTRO -->
+    <div class="modal-overlay" id="modal-add-pelada">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Adicionar Novo Registro</span>
+                <button class="close-btn" type="button" onclick="closeModal('modal-add-pelada')">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Data do Jogo</label>
+                <input type="date" id="input-match-date" class="form-control">
+            </div>
+            <div class="quick-add-grid" id="quick-add-container"></div>
+            <button class="btn-primary" type="button" onclick="savePeladaStats()" style="margin-top: 10px;">Salvar Registro</button>
+        </div>
+    </div>
+
+    <!-- MODAL COMPARTILHAR -->
+    <div class="modal-overlay" id="modal-share">
+        <div class="modal-content" style="align-items: center; text-align: center;">
+            <div class="modal-header" style="width: 100%;">
+                <span class="modal-title">Compartilhar Card</span>
+                <button class="close-btn" type="button" onclick="closeModal('modal-share')">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">Toque e segure para salvar ou utilize o botão para baixar a imagem.</p>
+            <img id="share-card-image" class="share-img-preview" src="" alt="Seu Card">
+            <a id="download-card-btn" class="btn-primary" download="card-fut-stats.png" href="#" style="text-decoration: none; margin-top: 8px;">Baixar Imagem</a>
+        </div>
+    </div>
+
+    <div id="toast">Estatísticas atualizadas</div>
+
+    <script>
+        const STAT_ICONS = {
+            gols: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 13v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,
+            ast: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>`,
+            trave: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 5H5c-1.1 0-2 .9-2 2v12h2V7h14v12h2V7c0-1.1-.9-2-2-2z"/></svg>`,
+            def: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`,
+            des: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>`,
+            default: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>`
+        };
+
+        const DEFAULT_STATS = [
+            { id: 'gols', name: 'Gols', short: 'GOL', active: true, target: 50, current: 0 },
+            { id: 'ast', name: 'Assists.', short: 'AST', active: true, target: 30, current: 0 },
+            { id: 'trave', name: 'Trave', short: 'TRV', active: true, target: 15, current: 0 },
+            { id: 'def', name: 'Defesas', short: 'DEF', active: false, target: 20, current: 0 },
+            { id: 'des', name: 'Desarmes', short: 'DSB', active: false, target: 40, current: 0 }
+        ];
+
+        let state = {
+            year: new Date().getFullYear(),
+            name: "Jonathan Almeida",
+            position: "ATA",
+            flag: "br",
+            photo: "",
+            over: 60,
+            stats: JSON.parse(JSON.stringify(DEFAULT_STATS)),
+            seasonsHistory: [],
+            matchRecords: []
+        };
+
+        const STORAGE_KEY = 'pelada_stats_ultimate_v13';
+
+        window.openModal = function(id) {
+            if (id === 'modal-config') {
+                document.getElementById('input-name').value = state.name;
+                document.getElementById('input-position').value = state.position;
+                document.getElementById('input-flag').value = state.flag;
+                document.getElementById('input-year').value = state.year || new Date().getFullYear();
+                renderConfigStatsList();
+            }
+            if (id === 'modal-seasons') renderSeasonsHistoryList();
+            if (id === 'modal-matches-history') renderMatchesHistoryList();
+            if (id === 'modal-add-pelada') {
+                const container = document.getElementById('quick-add-container');
+                container.innerHTML = '';
+                document.getElementById('input-match-date').value = new Date().toISOString().split('T')[0];
+
+                const activeStats = state.stats.filter(s => s.active);
+                if (activeStats.length === 0) {
+                    container.innerHTML = '<p style="grid-column: span 2; text-align:center; color:var(--text-secondary); font-size:0.8rem;">Ative estatísticas nas configurações.</p>';
+                } else {
+                    activeStats.forEach(s => {
+                        container.innerHTML += `
+                            <div class="quick-add-card">
+                                <label>${s.name}</label>
+                                <div class="quick-add-counter">
+                                    <button class="btn-counter" type="button" onclick="adjustInputVal('${s.id}', -1)">-</button>
+                                    <input type="number" id="input-add-${s.id}" value="0" min="0" readonly style="width:45px; background:none; border:none; color:white; font-family:'Rajdhani',sans-serif; font-weight:800; font-size:1.6rem; text-align:center;">
+                                    <button class="btn-counter" type="button" onclick="adjustInputVal('${s.id}', 1)">+</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.add('active');
+        };
+
+        window.closeModal = function(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('active');
+        };
+
+        window.adjustInputVal = function(statId, delta) {
+            const input = document.getElementById(`input-add-${statId}`);
+            if (input) {
+                let currentVal = parseInt(input.value) || 0;
+                input.value = Math.max(0, currentVal + delta);
+            }
+        };
+
+        window.savePeladaStats = function() {
+            const activeStats = state.stats.filter(s => s.active);
+            const matchDate = document.getElementById('input-match-date').value;
+            let recordData = { id: 'match_' + Date.now(), date: matchDate, stats: {} };
+            let hasAdded = false;
+
+            activeStats.forEach(s => {
+                const input = document.getElementById(`input-add-${s.id}`);
+                if (input) {
+                    const addVal = parseInt(input.value) || 0;
+                    if (addVal > 0) {
+                        s.current += addVal;
+                        recordData.stats[s.id] = addVal;
+                        hasAdded = true;
+                    }
+                }
+            });
+
+            if (hasAdded) {
+                if (!state.matchRecords) state.matchRecords = [];
+                state.matchRecords.unshift(recordData);
+            }
+
+            calculateOver();
+            saveState();
+            renderAll();
+            closeModal('modal-add-pelada');
+            showToast(hasAdded ? 'Registro salvo com sucesso!' : 'Nenhum valor adicionado');
+        };
+
+        function renderMatchesHistoryList() {
+            const container = document.getElementById('matches-history-list');
+            container.innerHTML = '';
+
+            if (!state.matchRecords || state.matchRecords.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary); font-size:0.8rem; text-align:center;">Nenhum jogo registrado nesta temporada.</p>';
+                return;
+            }
+
+            state.matchRecords.forEach((m, idx) => {
+                const statsSummary = Object.keys(m.stats).map(statId => {
+                    const statObj = state.stats.find(s => s.id === statId);
+                    return `${statObj ? statObj.name : statId}: +${m.stats[statId]}`;
+                }).join(' | ');
+
+                container.innerHTML += `
+                    <div class="match-record-card">
+                        <div class="match-record-info">
+                            <span class="match-record-date">📅 Data: ${m.date || 'Jogo'}</span>
+                            <span class="match-record-stats">${statsSummary}</span>
+                        </div>
+                        <button class="btn-delete-stat" type="button" onclick="deleteMatchRecord(${idx})" title="Excluir Registro">
+                            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px; height:16px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteMatchRecord = function(idx) {
+            if (confirm("Deseja realmente excluir este registro? Os números serão subtraídos do seu total.")) {
+                const record = state.matchRecords[idx];
+                Object.keys(record.stats).forEach(statId => {
+                    const statObj = state.stats.find(s => s.id === statId);
+                    if (statObj) {
+                        statObj.current = Math.max(0, statObj.current - record.stats[statId]);
+                    }
+                });
+
+                state.matchRecords.splice(idx, 1);
+                calculateOver();
+                saveState();
+                renderAll();
+                renderMatchesHistoryList();
+                showToast('Registro excluído');
+            }
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                } catch(e) {
+                    console.error("Error loading state", e);
+                }
+            }
+            calculateOver();
+            renderAll();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch(e) {
+                console.warn("Erro ao salvar no LocalStorage:", e);
+            }
+        }
+
+        function calculateOver() {
+            const activeStats = state.stats.filter(s => s.active);
+            if (activeStats.length === 0) {
+                state.over = 60;
+                return;
+            }
+
+            let totalProgress = 0;
+            activeStats.forEach(s => {
+                const ratio = s.target > 0 ? (s.current / s.target) : 0;
+                totalProgress += ratio;
+            });
+
+            const avgProgress = totalProgress / activeStats.length;
+            let computedOver = Math.floor(60 + (40 * avgProgress));
+            if (computedOver < 60) computedOver = 60;
+
+            state.over = computedOver;
+        }
+
+        function calculateAttributes(over, pos) {
+            let weights = { rit: 0, fin: 0, pas: 0, dri: 0, def: 0, fis: 0 };
+
+            switch(pos) {
+                case 'ATA':
+                    weights = { rit: 3, fin: 5, pas: -2, dri: 2, def: -12, fis: -1 };
+                    break;
+                case 'MEI':
+                    weights = { rit: -1, fin: 1, pas: 5, dri: 4, def: -4, fis: -2 };
+                    break;
+                case 'VOL':
+                    weights = { rit: -1, fin: -3, pas: 3, dri: 1, def: 4, fis: 3 };
+                    break;
+                case 'DEF':
+                    weights = { rit: -2, fin: -12, pas: -2, dri: -6, def: 6, fis: 5 };
+                    break;
+                case 'LAT':
+                    weights = { rit: 6, fin: -7, pas: 2, dri: 1, def: 2, fis: 0 };
+                    break;
+                case 'GOL':
+                    weights = { rit: 0, fin: -15, pas: -2, dri: -10, def: 7, fis: 4 };
+                    break;
+                default:
+                    weights = { rit: 0, fin: 0, pas: 0, dri: 0, def: 0, fis: 0 };
+            }
+
+            // ATRIBUTOS SEM TETO FIXO: SOBEM ILIMITADAMENTE JUNTO COM O OVER
+            const calc = (val) => Math.max(1, Math.floor(over + val));
+
+            return {
+                rit: { label: 'RIT', val: calc(weights.rit) },
+                fin: { label: pos === 'GOL' ? 'REF' : 'FIN', val: calc(weights.fin) },
+                pas: { label: pos === 'GOL' ? 'LAN' : 'PAS', val: calc(weights.pas) },
+                dri: { label: pos === 'GOL' ? 'MÃO' : 'DRI', val: calc(weights.dri) },
+                def: { label: pos === 'GOL' ? 'DEF' : 'DEF', val: calc(weights.def) },
+                fis: { label: pos === 'GOL' ? 'POS' : 'FIS', val: calc(weights.fis) }
+            };
+        }
+
+        function renderAll() {
+            renderCard();
+            renderStatsDashboard();
+            renderExportBannerStats();
+        }
+
+        function renderCard() {
+            const cardEl = document.getElementById('fut-card');
+            const ratingEl = document.getElementById('card-rating');
+            const nameEl = document.getElementById('card-name');
+            const posEl = document.getElementById('card-position');
+            const flagEl = document.getElementById('card-flag');
+            const photoEl = document.getElementById('card-photo');
+            const attrGridEl = document.getElementById('card-attributes-grid');
+
+            ratingEl.innerText = state.over;
+            nameEl.innerText = state.name.toUpperCase();
+            posEl.innerText = state.position;
+            flagEl.src = `https://flagcdn.com/w40/${state.flag.toLowerCase()}.png`;
+
+            if (state.photo) {
+                photoEl.src = state.photo;
+            }
+
+            cardEl.classList.remove('bronze', 'silver', 'gold', 'black');
+            if (state.over < 75) {
+                cardEl.classList.add('bronze');
+            } else if (state.over < 85) {
+                cardEl.classList.add('silver');
+            } else if (state.over < 99) { // GOLD ATÉ 98
+                cardEl.classList.add('gold');
+            } else { // REGRA SOLICITADA: BLACK SOMENTE NO OVER 99+
+                cardEl.classList.add('black');
+            }
+
+            const a = calculateAttributes(state.over, state.position);
+            attrGridEl.innerHTML = `
+                <div class="attr-row"><span class="attr-value">${a.rit.val}</span><span class="attr-label">${a.rit.label}</span></div>
+                <div class="attr-row"><span class="attr-value">${a.dri.val}</span><span class="attr-label">${a.dri.label}</span></div>
+                <div class="attr-row"><span class="attr-value">${a.fin.val}</span><span class="attr-label">${a.fin.label}</span></div>
+                <div class="attr-row"><span class="attr-value">${a.def.val}</span><span class="attr-label">${a.def.label}</span></div>
+                <div class="attr-row"><span class="attr-value">${a.pas.val}</span><span class="attr-label">${a.pas.label}</span></div>
+                <div class="attr-row"><span class="attr-value">${a.fis.val}</span><span class="attr-label">${a.fis.label}</span></div>
+            `;
+        }
+
+        function renderStatsDashboard() {
+            const container = document.getElementById('stats-appito-container');
+            container.innerHTML = '';
+
+            const activeStats = state.stats.filter(s => s.active);
+            if (activeStats.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary); font-size:0.8rem; grid-column:span 3; text-align:center;">Nenhuma estatística ativada.</p>';
+                return;
+            }
+
+            activeStats.forEach(s => {
+                const iconSvg = STAT_ICONS[s.id] || STAT_ICONS.default;
+                container.innerHTML += `
+                    <div class="appito-stat-unit">
+                        <div class="appito-icon-badge">${iconSvg}</div>
+                        <div class="appito-stat-content">
+                            <span class="appito-stat-label">${s.name}</span>
+                            <span class="appito-stat-val">${s.current}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('current-year-tag').innerText = state.year || new Date().getFullYear();
+        }
+
+        function renderExportBannerStats() {
+            const bannerContainer = document.getElementById('export-banner-stats');
+            const exportYearTag = document.getElementById('export-year-tag');
+            if (exportYearTag) exportYearTag.innerText = state.year || new Date().getFullYear();
+
+            if (!bannerContainer) return;
+            bannerContainer.innerHTML = '';
+
+            const activeStats = state.stats.filter(s => s.active);
+            activeStats.forEach(s => {
+                const iconSvg = STAT_ICONS[s.id] || STAT_ICONS.default;
+                bannerContainer.innerHTML += `
+                    <div class="export-stat-card">
+                        <div class="export-stat-badge">${iconSvg}</div>
+                        <div class="export-stat-content">
+                            <span class="export-stat-lbl">${s.name}</span>
+                            <span class="export-stat-val">${s.current}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderConfigStatsList() {
+            const container = document.getElementById('config-stats-list');
+            container.innerHTML = '';
+
+            state.stats.forEach((s) => {
+                container.innerHTML += `
+                    <div class="stat-config-row">
+                        <input type="checkbox" class="checkbox-custom" id="check-stat-${s.id}" ${s.active ? 'checked' : ''}>
+                        <span style="font-size:0.85rem; font-weight:600;">${s.name}</span>
+                        <input type="number" class="form-control" id="target-stat-${s.id}" value="${s.target}" min="1" placeholder="Meta" style="padding: 6px 10px;">
+                        <button class="btn-delete-stat" type="button" onclick="deleteStat('${s.id}')" title="Excluir estatística">
+                            <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteStat = function(statId) {
+            state.stats = state.stats.filter(s => s.id !== statId);
+            calculateOver();
+            saveState();
+            renderAll();
+            renderConfigStatsList();
+            showToast('Estatística excluída');
+        };
+
+        window.addCustomStat = function() {
+            const input = document.getElementById('input-custom-stat-name');
+            const name = input.value.trim();
+            if (!name) return;
+
+            const id = 'custom_' + Date.now();
+            const short = name.substring(0, 3).toUpperCase();
+            state.stats.push({
+                id: id,
+                name: name,
+                short: short,
+                active: true,
+                target: 20,
+                current: 0
+            });
+
+            input.value = '';
+            renderConfigStatsList();
+            showToast('Estatística criada');
+        };
+
+        window.saveSettings = function() {
+            state.name = document.getElementById('input-name').value.trim() || "Jogador";
+            state.position = document.getElementById('input-position').value;
+            state.flag = document.getElementById('input-flag').value;
+            state.year = parseInt(document.getElementById('input-year').value) || new Date().getFullYear();
+
+            state.stats.forEach((s) => {
+                const checkEl = document.getElementById(`check-stat-${s.id}`);
+                const targetEl = document.getElementById(`target-stat-${s.id}`);
+                if (checkEl && targetEl) {
+                    s.active = checkEl.checked;
+                    s.target = parseInt(targetEl.value) || 1;
+                }
+            });
+
+            calculateOver();
+            saveState();
+            renderAll();
+            closeModal('modal-config');
+            showToast('Configurações salvas com sucesso!');
+        };
+
+        // --- TEMPORADAS E VIRADA DE ANO ---
+        window.finishSeason = function() {
+            if (confirm("Tem certeza que deseja encerrar a temporada atual? Seus dados serão salvos no histórico e o card voltará ao nível inicial.")) {
+                const savedSeason = {
+                    id: 'season_' + Date.now(),
+                    year: state.year || new Date().getFullYear(),
+                    over: state.over,
+                    position: state.position,
+                    stats: JSON.parse(JSON.stringify(state.stats))
+                };
+
+                if (!state.seasonsHistory) state.seasonsHistory = [];
+                state.seasonsHistory.unshift(savedSeason);
+
+                state.year = (state.year || new Date().getFullYear()) + 1;
+                state.stats.forEach(s => s.current = 0);
+                state.matchRecords = [];
+
+                calculateOver();
+                saveState();
+                renderAll();
+                renderSeasonsHistoryList();
+                showToast(`Temporada ${savedSeason.year} encerrada! Ano ${state.year} iniciado.`);
+            }
+        };
+
+        function renderSeasonsHistoryList() {
+            const container = document.getElementById('seasons-history-list');
+            container.innerHTML = '';
+
+            if (!state.seasonsHistory || state.seasonsHistory.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary); font-size:0.8rem; text-align:center;">Nenhuma temporada anterior salva ainda.</p>';
+                return;
+            }
+
+            state.seasonsHistory.forEach((s, idx) => {
+                container.innerHTML += `
+                    <div class="season-history-card">
+                        <div class="season-history-info">
+                            <span class="season-history-year">Ano ${s.year}</span>
+                            <span class="season-history-over">OVER Final: ${s.over} | Posição: ${s.position}</span>
+                        </div>
+                        <div class="season-actions">
+                            <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" type="button" onclick="restoreSeason(${idx})">Restaurar</button>
+                            <button class="btn-delete-stat" type="button" onclick="deleteSeason(${idx})" title="Excluir Temporada">
+                                <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px; height:16px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteSeason = function(idx) {
+            if (confirm("Deseja realmente excluir o histórico desta temporada?")) {
+                state.seasonsHistory.splice(idx, 1);
+                saveState();
+                renderSeasonsHistoryList();
+                showToast('Temporada excluída do histórico');
+            }
+        };
+
+        window.restoreSeason = function(idx) {
+            if (confirm("Deseja restaurar as estatísticas e o nível do card desta temporada no seu perfil atual?")) {
+                const target = state.seasonsHistory[idx];
+                state.year = target.year;
+                state.over = target.over;
+                state.position = target.position;
+                state.stats = JSON.parse(JSON.stringify(target.stats));
+
+                calculateOver();
+                saveState();
+                renderAll();
+                closeModal('modal-seasons');
+                showToast(`Temporada ${target.year} restaurada!`);
+            }
+        };
+
+        // --- UPLOAD E OTIMIZAÇÃO DE FOTO PNG ---
+        window.handlePhotoUpload = function(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                if (file.type !== 'image/png') {
+                    alert('Por favor, selecione um arquivo no formato PNG (de preferência com fundo transparente).');
+                    input.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const maxDim = 450;
+                        let w = img.width;
+                        let h = img.height;
+
+                        if (w > h && w > maxDim) {
+                            h = Math.round((h * maxDim) / w);
+                            w = maxDim;
+                        } else if (h > maxDim) {
+                            w = Math.round((w * maxDim) / h);
+                            h = maxDim;
+                        }
+
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+
+                        state.photo = canvas.toDataURL('image/png');
+                        renderCard();
+                        saveState();
+                        showToast('Foto PNG carregada com sucesso!');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.generateCardImage = function() {
+            const futCard = document.getElementById('fut-card');
+            const cloneContainer = document.getElementById('export-card-clone-container');
+            cloneContainer.innerHTML = '';
+            cloneContainer.appendChild(futCard.cloneNode(true));
+
+            const exportArea = document.getElementById('export-card-area');
+
+            showToast('Gerando imagem com estatísticas...');
+            html2canvas(exportArea, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: null,
+                logging: false
+            }).then(canvas => {
+                const imgUrl = canvas.toDataURL('image/png');
+                document.getElementById('share-card-image').src = imgUrl;
+                document.getElementById('download-card-btn').href = imgUrl;
+                openModal('modal-share');
+            }).catch(err => {
+                console.error(err);
+                alert("Erro ao gerar imagem.");
+            });
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            
+            // Registrar PWA Service Worker se suportado
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
+            }
+        });
+    </script>
+</body>
+</html>
+"""
+
+with open('index.html', 'w', encoding='utf-8') as f:
+    f.write(code_content)
+
+print("Updated index.html successfully with all latest requirements!")
+}
+")
