@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fut Stats Ultimate</title>
-    <!-- Favicon e PWA Manifest -->
-    <link rel="icon" type="image/svg+xml" href="./icon.svg">
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#f3ce56">
-    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f3ce56' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 13v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/%3E%3C/svg%3E">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,6 +49,7 @@
             background-image: radial-gradient(circle at 50% 0%, #1a1708 0%, #06070a 85%);
         }
 
+        /* --- HEADER --- */
         header {
             width: 100%;
             max-width: 480px;
@@ -105,6 +103,7 @@
             fill: currentColor;
         }
 
+        /* --- CONTAINER RESPONSIVO --- */
         .container {
             width: 100%;
             max-width: 480px;
@@ -120,6 +119,7 @@
             }
         }
 
+        /* --- EXPORT AREA (FORA DA TELA PRINCIPAL) --- */
         #export-card-area-wrapper {
             position: fixed;
             top: -9999px;
@@ -140,6 +140,7 @@
             border-radius: 24px;
         }
 
+        /* --- FUT CARD RETANGULAR --- */
         .fut-card {
             width: 310px;
             height: 470px;
@@ -180,6 +181,7 @@
             overflow: hidden;
         }
 
+        /* FUNDO GEOMÉTRICO DOURADO */
         .card-bg-pattern {
             position: absolute;
             inset: 0;
@@ -215,6 +217,9 @@
             pointer-events: none;
         }
 
+        /* TEMAS DINÂMICOS DE CARD */
+
+        /* BRONZE (60 - 74) */
         .fut-card.bronze {
             background: linear-gradient(135deg, #a87343 0%, #422818 50%, #a87343 100%);
         }
@@ -227,14 +232,21 @@
         }
         .fut-card.bronze .card-line { background: rgba(247, 232, 220, 0.2); }
 
+        /* SILVER (75 - 84) */
         .fut-card.silver {
             background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #cbd5e1 100%);
             box-shadow: 0 0 25px rgba(226, 232, 240, 0.3), 0 20px 45px rgba(0,0,0,0.9);
         }
-        .fut-card.silver .fut-card-content { border-color: rgba(226, 232, 240, 0.8); }
+        .fut-card.silver .fut-card-content {
+            border-color: rgba(226, 232, 240, 0.8);
+        }
         .fut-card.silver .card-bg-pattern {
             background: radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.35) 0%, transparent 70%),
                         linear-gradient(135deg, #2a3447 0%, #0d121d 60%, #1e293b 100%);
+        }
+        .fut-card.silver .card-bg-pattern::before {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent);
         }
         .fut-card.silver .rating, .fut-card.silver .position, .fut-card.silver .player-name, .fut-card.silver .attr-value {
             color: #ffffff;
@@ -243,6 +255,7 @@
         .fut-card.silver .attr-label { color: #cbd5e1; }
         .fut-card.silver .card-line { background: linear-gradient(90deg, transparent, #ffffff, transparent); }
 
+        /* GOLD (85 - 98) */
         .fut-card.gold {
             background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold-dark) 50%, var(--accent-gold-bright) 100%);
             box-shadow: 0 0 30px rgba(243, 206, 86, 0.3), 0 20px 45px rgba(0,0,0,0.9);
@@ -273,6 +286,14 @@
             background: radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.35) 0%, transparent 70%),
                         linear-gradient(135deg, #10061d 0%, #030208 60%, #1a082e 100%);
         }
+        .fut-card.black .card-bg-pattern::before {
+            border-color: rgba(216, 180, 254, 0.35);
+            background: linear-gradient(135deg, rgba(216, 180, 254, 0.12), transparent);
+        }
+        .fut-card.black .card-bg-pattern::after {
+            border-color: rgba(168, 85, 247, 0.35);
+            background: linear-gradient(45deg, rgba(168, 85, 247, 0.12), transparent);
+        }
         .fut-card.black .rating, .fut-card.black .position, .fut-card.black .player-name, .fut-card.black .attr-value {
             color: var(--accent-neon-light-purple);
             text-shadow: 0 0 12px rgba(168, 85, 247, 0.9), 0 0 20px rgba(216, 180, 254, 0.6);
@@ -280,6 +301,7 @@
         .fut-card.black .attr-label { color: #d8b4fe; }
         .fut-card.black .card-line { background: linear-gradient(90deg, transparent, var(--accent-neon-light-purple), transparent); }
 
+        /* CARD TOP OVERLAY */
         .card-top {
             display: flex;
             justify-content: space-between;
@@ -319,6 +341,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.6);
         }
 
+        /* FOTO DO JOGADOR NO CARD */
         .photo-container {
             position: absolute;
             top: 0;
@@ -341,6 +364,7 @@
             filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.85));
         }
 
+        /* CARD BOTTOM SECTION */
         .card-bottom {
             position: relative;
             z-index: 3;
@@ -376,6 +400,7 @@
             border-radius: 1px;
         }
 
+        /* GRID DE ATRIBUTOS ESTILO FIFA */
         .fut-attributes-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -414,6 +439,7 @@
             text-transform: uppercase;
         }
 
+        /* PAINEL DE ESTATÍSTICAS DO COMPARTILHAR */
         .export-stats-banner {
             width: 310px;
             background: #0b0e14;
@@ -502,6 +528,7 @@
             line-height: 1;
         }
 
+        /* --- BOTÕES PRINCIPAIS DOURADOS --- */
         .btn-primary {
             width: 100%;
             background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold-dark) 100%);
@@ -550,6 +577,7 @@
             color: var(--accent-gold-bright);
         }
 
+        /* --- DASHBOARD ESTATÍSTICAS --- */
         .panel {
             width: 100%;
             background: var(--panel-bg);
@@ -636,6 +664,7 @@
             color: var(--text-primary);
         }
 
+        /* --- LISTA DE REGISTROS DE PARTIDAS --- */
         .match-record-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--panel-border);
@@ -664,6 +693,7 @@
             color: var(--text-secondary);
         }
 
+        /* --- HISTÓRICO DE TEMPORADAS SALVAS --- */
         .season-history-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--panel-border);
@@ -696,6 +726,7 @@
             gap: 8px;
         }
 
+        /* --- MODAIS & FORMULÁRIOS --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -891,6 +922,7 @@
             border: 1px solid var(--panel-border);
         }
 
+        /* TOAST NOTIFICATION */
         #toast {
             position: fixed;
             bottom: 24px;
@@ -955,14 +987,18 @@
                         </div>
                     </div>
 
+                    <!-- FOTO ESTENDIDA NA PARTE SUPERIOR DO CARD -->
                     <div class="photo-container">
                         <img id="card-photo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' opacity='0.5' d='M12 12a5 5 0 1 0-5-5 5.006 5.006 0 0 0 5 5zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Jogador">
                     </div>
 
+                    <!-- BASE DO CARD: NOME E OS 6 ATRIBUTOS DO FIFA -->
                     <div class="card-bottom">
                         <div class="player-name" id="card-name">JONATHAN ALMEIDA</div>
                         <div class="card-line"></div>
-                        <div class="fut-attributes-container" id="card-attributes-grid"></div>
+                        <div class="fut-attributes-container" id="card-attributes-grid">
+                            <!-- Attributes generated dynamically -->
+                        </div>
                         <div class="card-watermark-footer">FUT CARDS</div>
                     </div>
 
@@ -970,42 +1006,52 @@
             </div>
         </div>
 
-        <!-- AREA DE EXPORTAÇÃO PARA COMPARTILHAR -->
+        <!-- AREA DE EXPORTAÇÃO QUE FICA FORA DA TELA E SÓ É USADA AO GERAR A IMAGEM -->
         <div id="export-card-area-wrapper">
             <div id="export-card-area" class="export-container-box">
+                <!-- Copia dinamicamente o card no momento da captura -->
                 <div id="export-card-clone-container"></div>
+
+                <!-- BANNER DE ESTATÍSTICAS ANEXADO NA IMAGEM DE COMPARTILHAMENTO -->
                 <div class="export-stats-banner">
                     <div class="export-stats-header">
                         <span class="export-stats-title">Estatísticas</span>
                         <span class="export-stats-year" id="export-year-tag">2026</span>
                     </div>
-                    <div class="export-stats-grid" id="export-banner-stats"></div>
+                    <div class="export-stats-grid" id="export-banner-stats">
+                        <!-- Stat items dynamically rendered -->
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- SHARE CARD BUTTON -->
         <button class="btn-primary" type="button" onclick="generateCardImage()">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
             Compartilhar Card
         </button>
 
+        <!-- ADD NEW RECORD BUTTON -->
         <button class="btn-secondary" type="button" onclick="openModal('modal-add-pelada')">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             Adicionar Novo Registro
         </button>
 
+        <!-- STATS DASHBOARD CENTRALIZADO -->
         <div class="panel">
             <div class="panel-header">
                 <span class="panel-title">Estatísticas Acumuladas</span>
                 <span class="year-tag" id="current-year-tag">2026</span>
             </div>
 
-            <div class="stats-appito-grid" id="stats-appito-container"></div>
+            <div class="stats-appito-grid" id="stats-appito-container">
+                <!-- Dynamically rendered stat cards -->
+            </div>
         </div>
 
     </div>
 
-    <!-- MODAL CONFIGURAÇÕES -->
+    <!-- --- MODAL: CONFIGURAÇÕES & GERENCIAMENTO DE ESTATÍSTICAS --- -->
     <div class="modal-overlay" id="modal-config">
         <div class="modal-content">
             <div class="modal-header">
@@ -1063,7 +1109,9 @@
 
             <span class="modal-title" style="font-size: 0.85rem; color: var(--text-secondary);">Estatísticas Monitoradas e Metas</span>
 
-            <div id="config-stats-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            <div id="config-stats-list" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- List of stats with DELETE button -->
+            </div>
 
             <div style="display: flex; gap: 8px; margin-top: 4px;">
                 <input type="text" id="input-custom-stat-name" class="form-control" placeholder="Nova estatística..." style="flex:1;">
@@ -1076,7 +1124,7 @@
         </div>
     </div>
 
-    <!-- MODAL REGISTROS DE JOGOS -->
+    <!-- --- MODAL: CONSULTA DE REGISTROS DE JOGOS --- -->
     <div class="modal-overlay" id="modal-matches-history">
         <div class="modal-content">
             <div class="modal-header">
@@ -1085,12 +1133,18 @@
                     <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary);">Histórico de partidas registradas. Você pode excluir um registro caso tenha errado.</p>
-            <div id="matches-history-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                Histórico de todas as partidas registradas nesta temporada. Você pode excluir um registro caso tenha digitado algo errado.
+            </p>
+
+            <div id="matches-history-list" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Dynamically rendered match records -->
+            </div>
         </div>
     </div>
 
-    <!-- MODAL TEMPORADAS -->
+    <!-- --- MODAL: TEMPORADAS / VIRADA DE ANO --- -->
     <div class="modal-overlay" id="modal-seasons">
         <div class="modal-content">
             <div class="modal-header">
@@ -1099,15 +1153,26 @@
                     <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary);">Ao encerrar a temporada, suas estatísticas vão para o histórico e o card volta para o nível inicial (60).</p>
-            <button class="btn-primary" type="button" onclick="finishSeason()">🏆 Encerrar Temporada Atual & Virar o Ano</button>
+
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                Ao encerrar a temporada do ano atual, suas estatísticas são salvas no histórico e seu card retorna ao nível inicial de pré-temporada (OVER 60).
+            </p>
+
+            <button class="btn-primary" type="button" onclick="finishSeason()">
+                🏆 Encerrar Temporada Atual & Virar o Ano
+            </button>
+
             <hr style="border: none; border-top: 1px solid var(--panel-border); margin: 6px 0;">
+
             <span class="modal-title" style="font-size: 0.85rem; color: var(--text-secondary);">Histórico de Temporadas Salvas</span>
-            <div id="seasons-history-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+            <div id="seasons-history-list" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- List of saved seasons -->
+            </div>
         </div>
     </div>
 
-    <!-- MODAL ADICIONAR REGISTRO -->
+    <!-- --- MODAL: ADICIONAR NOVO REGISTRO --- -->
     <div class="modal-overlay" id="modal-add-pelada">
         <div class="modal-content">
             <div class="modal-header">
@@ -1116,16 +1181,23 @@
                     <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
+
             <div class="form-group">
                 <label>Data do Jogo</label>
                 <input type="date" id="input-match-date" class="form-control">
             </div>
-            <div class="quick-add-grid" id="quick-add-container"></div>
-            <button class="btn-primary" type="button" onclick="savePeladaStats()" style="margin-top: 10px;">Salvar Registro</button>
+
+            <div class="quick-add-grid" id="quick-add-container">
+                <!-- Dynamically rendered counters -->
+            </div>
+
+            <button class="btn-primary" type="button" onclick="savePeladaStats()" style="margin-top: 10px;">
+                Salvar Registro
+            </button>
         </div>
     </div>
 
-    <!-- MODAL COMPARTILHAR -->
+    <!-- --- MODAL: COMPARTILHAR CARD --- -->
     <div class="modal-overlay" id="modal-share">
         <div class="modal-content" style="align-items: center; text-align: center;">
             <div class="modal-header" style="width: 100%;">
@@ -1134,15 +1206,24 @@
                     <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">Toque e segure para salvar ou utilize o botão para baixar a imagem.</p>
+
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">
+                Toque e segure para salvar ou utilize o botão para baixar a imagem.
+            </p>
+
             <img id="share-card-image" class="share-img-preview" src="" alt="Seu Card">
-            <a id="download-card-btn" class="btn-primary" download="card-fut-stats.png" href="#" style="text-decoration: none; margin-top: 8px;">Baixar Imagem</a>
+
+            <a id="download-card-btn" class="btn-primary" download="card-fut-stats.png" href="#" style="text-decoration: none; margin-top: 8px;">
+                Baixar Imagem
+            </a>
         </div>
     </div>
 
+    <!-- TOAST NOTIFICATION -->
     <div id="toast">Estatísticas atualizadas</div>
 
     <script>
+        // --- ÍCONES SVG PARA ESTATÍSTICAS ---
         const STAT_ICONS = {
             gols: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 13v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,
             ast: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>`,
@@ -1152,6 +1233,7 @@
             default: `<svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>`
         };
 
+        // --- ESTADO INICIAL ---
         const DEFAULT_STATS = [
             { id: 'gols', name: 'Gols', short: 'GOL', active: true, target: 50, current: 0 },
             { id: 'ast', name: 'Assists.', short: 'AST', active: true, target: 30, current: 0 },
@@ -1169,10 +1251,10 @@
             over: 60,
             stats: JSON.parse(JSON.stringify(DEFAULT_STATS)),
             seasonsHistory: [],
-            matchRecords: []
+            matchRecords: [] // Registro individual de partidas
         };
 
-        const STORAGE_KEY = 'pelada_stats_ultimate_v13';
+        const STORAGE_KEY = 'pelada_stats_ultimate_v12';
 
         window.openModal = function(id) {
             if (id === 'modal-config') {
@@ -1182,8 +1264,12 @@
                 document.getElementById('input-year').value = state.year || new Date().getFullYear();
                 renderConfigStatsList();
             }
-            if (id === 'modal-seasons') renderSeasonsHistoryList();
-            if (id === 'modal-matches-history') renderMatchesHistoryList();
+            if (id === 'modal-seasons') {
+                renderSeasonsHistoryList();
+            }
+            if (id === 'modal-matches-history') {
+                renderMatchesHistoryList();
+            }
             if (id === 'modal-add-pelada') {
                 const container = document.getElementById('quick-add-container');
                 container.innerHTML = '';
@@ -1224,6 +1310,7 @@
             }
         };
 
+        // --- SALVAMENTO DE REGISTROS DA PELADA ---
         window.savePeladaStats = function() {
             const activeStats = state.stats.filter(s => s.active);
             const matchDate = document.getElementById('input-match-date').value;
@@ -1338,12 +1425,15 @@
             });
 
             const avgProgress = totalProgress / activeStats.length;
+            
+            // PERMITE QUE O OVER PASSE DE 99 CASO BATA/SUPERE AS METAS
             let computedOver = Math.floor(60 + (40 * avgProgress));
             if (computedOver < 60) computedOver = 60;
 
             state.over = computedOver;
         }
 
+        // DISTRIBUIÇÃO DINÂMICA DE ATRIBUTOS (SUBINDO ILIMITADAMENTE DE ACORDO COM O OVER)
         function calculateAttributes(over, pos) {
             let weights = { rit: 0, fin: 0, pas: 0, dri: 0, def: 0, fis: 0 };
 
@@ -1370,7 +1460,7 @@
                     weights = { rit: 0, fin: 0, pas: 0, dri: 0, def: 0, fis: 0 };
             }
 
-            // ATRIBUTOS SEM TETO FIXO: SOBEM ILIMITADAMENTE JUNTO COM O OVER
+            // SEM TETO MÁXIMO DE 99: OS ATRIBUTOS SOBEM DE ACORDO COM O OVER
             const calc = (val) => Math.max(1, Math.floor(over + val));
 
             return {
@@ -1412,12 +1502,13 @@
                 cardEl.classList.add('bronze');
             } else if (state.over < 85) {
                 cardEl.classList.add('silver');
-            } else if (state.over < 99) { // GOLD ATÉ 98
+            } else if (state.over < 99) { // GOLD ATÉ OVER 98
                 cardEl.classList.add('gold');
-            } else { // REGRA SOLICITADA: BLACK SOMENTE NO OVER 99+
+            } else { // REGRA SOLICITADA: BLACK APENAS NO OVER 99+
                 cardEl.classList.add('black');
             }
 
+            // RENDERA OS 6 ATRIBUTOS NO CARD EM 2 COLUNAS
             const a = calculateAttributes(state.over, state.position);
             attrGridEl.innerHTML = `
                 <div class="attr-row"><span class="attr-value">${a.rit.val}</span><span class="attr-label">${a.rit.label}</span></div>
@@ -1564,7 +1655,7 @@
 
                 state.year = (state.year || new Date().getFullYear()) + 1;
                 state.stats.forEach(s => s.current = 0);
-                state.matchRecords = [];
+                state.matchRecords = []; // Reseta histórico de jogos do ano individual
 
                 calculateOver();
                 saveState();
@@ -1704,20 +1795,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             loadState();
-            
-            // Registrar PWA Service Worker se suportado
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
-            }
         });
     </script>
 </body>
 </html>
-"""
-
-with open('index.html', 'w', encoding='utf-8') as f:
-    f.write(code_content)
-
-print("Updated index.html successfully with all latest requirements!")
-}
-")
