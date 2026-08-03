@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fut-stats-cache-v2';
+const CACHE_NAME = 'fut-stats-v14';
 const assetsToCache = [
   './index.html',
   './manifest.json',
